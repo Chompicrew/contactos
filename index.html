@@ -1,114 +1,90 @@
 <!DOCTYPE html>
-<html>
-<head>
-<title>Ejercicio 14-1</title>
-<meta http-equiv="Content-type" content="text/html;
-charset=utf-8">
-<meta name="viewport" id="viewport"
-content="width=device-width, height=device-height,
-initial-scale=1.0, maximum-scale=1.0, user-scalable=no;"
-/>
-<script type="text/javascript" charset="utf-8"
-src="jquery.js"></script>
-<script type="text/javascript" charset="utf-8"
-src="phonegap.js"></script>
-<script type="text/javascript" charset="utf-8">
+<html>   
+<head>      
+ <title>Contact Example</title>    
+ <script type="text/javascript" charset="utf-8" src="cordova.js"></script>  
+ <script type="text/javascript" charset="utf-8">          
+  // Wait for device API libraries to load         
+  document.addEventListener("deviceready", onDeviceReady, false);      
+    // device APIs are available  
+
+    function onDeviceReady() {         
+    // find all contacts with ' ' in any name field    ,If field is empty or full
+    var options = new ContactFindOptions();    
+    options.filter = "";   
+    options.multiple = true;
+    /*
+    Keyword search  
+    Name: "displayName"  ,
+    Phone number: " phoneNumbers" //ContactField[] 
+
+    */  
+    var fields = ["displayName", "name", "phoneNumbers"];                
+    navigator.contacts.find(fields, onSuccess, onError, options);            } 
+    
+
+    // onSuccess: Get a snapshot of the current contacts        
+    function onSuccess(contacts) {     
+
+      // Contact and telephone number on here
+      var aResult = [];    
+
+      for (var i = 0; contacts[i]; i++) {                    
+        console.log("Display Name = " + contacts[i].displayName); 
+
+        if (contacts[i].phoneNumbers && contacts[i].phoneNumbers.length) {
+
+          var contactPhoneList =[];
+
+          for (var j = 0; contacts[i].phoneNumbers[j]; j++) {
+         // alert(contacts[i].phoneNumbers[j].type+"    "+contacts[i].displayName+"---------" + contacts[i].phoneNumbers[j].value );
+
+         contactPhoneList.push(
+         { 
+          'type' :  contacts[i].phoneNumbers[j].type, 
+          'value' : contacts[i].phoneNumbers[j].value
+        }
+        );
+
+       };        
+
+       aResult.push({
+        name:contacts[i].displayName,
+        phone:contactPhoneList
+      });
+
+     };
+        //
+      }
+
+		//Iterative acquisition contacts and number
+    for (var i = 0; aResult[i]; i++) {
+      for (var j = 0 ; aResult[i].phone[j]; j++) {
+
+        alert(aResult[i].name +"--------"+ aResult[i].phone[j].type+"-----"+aResult[i].phone[j].value
+          );
+      };
 
 
-{
-"FullName": "Michael Palin",
-"LastName": "Palin",
-"FirstName": "Michael",
-"EmailAddress": "michael@montypython.com",
-"OfficePhone": "330.123.4567",
-"MobilePhone": "330.987.6543"
-}
+    };
+  }   
+    // onError: Failed to get the contacts   
+    function onError(contactError) {                alert('onError!');            }   
+
+    function baozi(){ alert("S1");}
+
+    function intent() {       onDeviceReady();     }    
 
 
-function addContact(contactInfo) {
-//Create a new contact object
-var contact = navigator.contacts.create();
-//Populate the contact object with values
-contact.displayName = contactInfo.FullName;
-contact.nickname = contactInfo.FullName;
-//Populate the Contact's Name entries
-var tmpName = new ContactName();
-tmpName.givenName = contactInfo.FirstName;
-tmpName.familyName = contactInfo.LastName;
-tmpName.formatted = contactInfo.FullName;
-//Then add the name object to the contact object
-contact.name = tmpName;
-//Populate Phone Number Entries by creating and populating
-//an array of phone number information
-var phoneNums = [2];
-phoneNums[0] = new ContactField('work',
-contactInfo.OfficePhone, false);
-phoneNums[1] = new ContactField('mobile',
-contactInfo.MobilePhone, true);
-contact.phoneNumbers = phoneNums;
-//Populate Email Address the same way that you did the
-//phone numbers
-var emailAddresses = [1];
-emailAddresses[0] = new ContactField('home',
-contactInfo.EmailAddress, true);
-contact.emails = emailAddresses;
-// save the contact object to the device's contact database
-contact.save(onContactSaveSuccess, onContactSaveError);
-}
+  </script>   
+</head>   
+<body>     
+ <h1>Example</h1>    
+ <p>Find Contacts</p>  
 
-var contact = navigator.contacts.create({displayName:
-'Michael Palin', nickname: 'Mike', name: {givenName:
-'Michael', familyName: 'Palin'}});
-contact.save(onContactSaveSuccess, onContactSaveError);
-
-function onContactSaveSuccess() {
-alert(contactInfo.FullName + " was successfully saved to the device contacts database");
-}
-
-function onContactSaveError(e) {
-var msgText;
-//Now build a message string based upon the error
-//returned by the API
-switch(e.code) {
-case ContactError.UNKNOWN_ERROR:
-msgText = "An Unknown Error was reported while saving the contact.";
-break;
-case ContactError.INVALID_ARGUMENT_ERROR:
-msgText = "An invalid argument was used with the Contact API.";
-break;
-case ContactError.TIMEOUT_ERROR:
-msgText = "Timeout Error.";
-break;
-case ContactError.PENDING_OPERATION_ERROR:
-msgText = "Pending Operation Error.";
-break;
-case ContactError.IO_ERROR:
-msgText = "IO Error.";
-break;
-case ContactError.NOT_SUPPORTED_ERROR:
-msgText = "Not Supported Error.";
-break;
-case ContactError.PERMISSION_DENIED_ERROR:
-msgText = "Permission Denied Error.";
-break;
-default:
-//Create a generic response, just in case the
-// switch fails
-msgText = "Unknown Error (" + e.code + ")";
-}
-//Now tell the user what happened
-navigator.notification.alert(msgText, null,
-"Contact Save Error");
-}
-
-
-
-
-</script>
-</head>
-<body onload="onBodyLoad()">
-<h1>Contactos</h1>
-<p id="contactInfo"></p>
-</body>
+ <p><a href="#" onclick="showAlert(); return false;">Show Alert</a></p>    
+ <p><a href="#" onclick="playBeep(); return false;">Play Beep</a></p>    
+ <p><a href="#" onclick="baozi(); return false;">Vibrate</a></p>  
+ <p><a href="#" onclick="intent(); return false;">The Html jumps to the Android interface</a></p>   
 </body>
 </html>
